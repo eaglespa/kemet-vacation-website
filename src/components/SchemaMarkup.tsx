@@ -1,0 +1,216 @@
+import { Helmet } from 'react-helmet-async';
+import { trips } from '@/data/trips';
+import { useTranslation } from 'react-i18next';
+import { supportedLngs } from '@/i18n';
+
+const languageNames: Record<string, string> = {
+  en: 'English', de: 'German', fr: 'French', ru: 'Russian', ar: 'Arabic',
+  it: 'Italian', es: 'Spanish', zh: 'Chinese', ja: 'Japanese', ko: 'Korean',
+  nl: 'Dutch', pl: 'Polish', tr: 'Turkish', pt: 'Portuguese', sv: 'Swedish',
+  cs: 'Czech', uk: 'Ukrainian', hu: 'Hungarian', ro: 'Romanian', sk: 'Slovak',
+  da: 'Danish', no: 'Norwegian', fi: 'Finnish', sr: 'Serbian', bg: 'Bulgarian',
+  hi: 'Hindi', id: 'Indonesian', el: 'Greek', vi: 'Vietnamese', he: 'Hebrew',
+  kk: 'Kazakh', lt: 'Lithuanian'
+};
+
+export default function SchemaMarkup() {
+  const { t } = useTranslation();
+  const availableLanguage = supportedLngs.map(l => languageNames[l] || l);
+
+  const orgTotalReviews = trips.reduce((sum, t) => sum + t.reviews, 0);
+
+  const organizationSchema = {
+    "@context": "https://schema.org",
+    "@type": "TravelAgency",
+    "name": "KEMET VACATION",
+    "alternateName": "Kemet Vacation",
+    "url": "https://kemetvacation.com",
+    "logo": "https://kemetvacation.com/logo.jpg",
+    "image": "https://kemetvacation.com/logo.jpg",
+    "description": "Premier luxury travel agency in Egypt, specializing in private Red Sea yacht charters, Nile cruises, VIP Cairo Pyramids access, and bespoke multi-day expeditions across Hurghada, Cairo, Luxor, Aswan, Sharm El Sheikh, and Alexandria.",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Hurghada Marina Boulevard",
+      "addressLocality": "Hurghada",
+      "addressRegion": "Red Sea Governorate",
+      "postalCode": "84511",
+      "addressCountry": "EG"
+    },
+    "telephone": "+201065206833",
+    "email": "hello@kemetvacation.com",
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "telephone": "+201065206833",
+      "contactType": "customer service",
+      "areaServed": ["EG", "US", "GB", "DE", "FR", "RU", "IT", "ES", "CH", "AT", "NL", "BE", "AE", "SA"],
+      "availableLanguage": availableLanguage
+    },
+    "priceRange": "$$$$",
+    "currenciesAccepted": "USD, EUR, GBP, EGP",
+    "paymentAccepted": "Cash, Credit Card, WhatsApp Pay, Wire Transfer",
+    "openingHours": "Mo-Su 00:00-24:00",
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 27.2579,
+      "longitude": 33.8116
+    },
+    "areaServed": [
+      {
+        "@type": "City",
+        "name": "Hurghada",
+        "geo": { "@type": "GeoCoordinates", "latitude": 27.2579, "longitude": 33.8116 }
+      },
+      {
+        "@type": "City",
+        "name": "Cairo & Giza",
+        "geo": { "@type": "GeoCoordinates", "latitude": 29.9792, "longitude": 31.1342 }
+      },
+      {
+        "@type": "City",
+        "name": "Luxor",
+        "geo": { "@type": "GeoCoordinates", "latitude": 25.6872, "longitude": 32.6396 }
+      },
+      {
+        "@type": "City",
+        "name": "Aswan",
+        "geo": { "@type": "GeoCoordinates", "latitude": 24.0889, "longitude": 32.8998 }
+      },
+      {
+        "@type": "City",
+        "name": "Sharm El Sheikh",
+        "geo": { "@type": "GeoCoordinates", "latitude": 27.9158, "longitude": 34.3299 }
+      },
+      {
+        "@type": "City",
+        "name": "Alexandria",
+        "geo": { "@type": "GeoCoordinates", "latitude": 31.2001, "longitude": 29.9187 }
+      }
+    ],
+    "sameAs": [
+      "https://www.instagram.com/vacationinegypt",
+      "https://www.facebook.com/vacationinegypt",
+      "https://www.youtube.com/@vacationinegypt",
+      "https://www.tripadvisor.com/vacationinegypt"
+    ],
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.9",
+      "reviewCount": orgTotalReviews,
+      "bestRating": "5"
+    }
+  };
+
+  const websiteSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "KEMET VACATION",
+    "url": "https://kemetvacation.com",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": "https://kemetvacation.com/?search={search_term_string}"
+      },
+      "query-input": "required name=search_term_string"
+    }
+  };
+
+  const tripsSchema = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "KEMET VACATION — Luxury Egyptian Experiences",
+    "description": "40 curated luxury travel experiences across Egypt's most extraordinary destinations",
+    "itemListElement": trips.map((trip, index) => ({
+      "@type": "ListItem",
+      "position": index + 1,
+      "item": {
+        "@type": "TouristTrip",
+        "name": trip.title,
+        "description": trip.description,
+        "image": `https://kemetvacation.com${trip.image}`,
+        "url": `https://kemetvacation.com/trip/${trip.id}`,
+        "touristType": trip.category === 'relaxation' || trip.category === 'cruise' ? ["Couple", "Family"] : ["Family", "Couple", "Solo"],
+        "itinerary": {
+          "@type": "ItemList",
+          "name": trip.title,
+          "itemListElement": trip.highlights.map((h, i) => ({
+            "@type": "ListItem",
+            "position": i + 1,
+            "name": h
+          }))
+        },
+        "offers": {
+          "@type": "Offer",
+          "price": trip.price,
+          "priceCurrency": trip.currency,
+          "availability": "https://schema.org/InStock",
+          "url": `https://kemetvacation.com/trip/${trip.id}`,
+          "seller": {
+            "@type": "Organization",
+            "name": "KEMET VACATION"
+          }
+        },
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": trip.rating,
+          "reviewCount": trip.reviews,
+          "bestRating": 5
+        }
+      }
+    }))
+  };
+
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": t('faq.q1'),
+        "acceptedAnswer": { "@type": "Answer", "text": t('faq.a1') }
+      },
+      {
+        "@type": "Question",
+        "name": t('faq.q2'),
+        "acceptedAnswer": { "@type": "Answer", "text": t('faq.a2') }
+      },
+      {
+        "@type": "Question",
+        "name": t('faq.q3'),
+        "acceptedAnswer": { "@type": "Answer", "text": t('faq.a3') }
+      },
+      {
+        "@type": "Question",
+        "name": t('faq.q4'),
+        "acceptedAnswer": { "@type": "Answer", "text": t('faq.a4') }
+      },
+      {
+        "@type": "Question",
+        "name": t('faq.q5'),
+        "acceptedAnswer": { "@type": "Answer", "text": t('faq.a5') }
+      },
+      {
+        "@type": "Question",
+        "name": t('faq.q6'),
+        "acceptedAnswer": { "@type": "Answer", "text": t('faq.a6') }
+      }
+    ]
+  };
+
+  return (
+    <Helmet>
+      <script type="application/ld+json">
+        {JSON.stringify(organizationSchema)}
+      </script>
+      <script type="application/ld+json">
+        {JSON.stringify(websiteSchema)}
+      </script>
+      <script type="application/ld+json">
+        {JSON.stringify(tripsSchema)}
+      </script>
+      <script type="application/ld+json">
+        {JSON.stringify(faqSchema)}
+      </script>
+    </Helmet>
+  );
+}

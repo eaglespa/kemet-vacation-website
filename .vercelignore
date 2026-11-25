@@ -1,0 +1,9 @@
+# Large raw video files - not needed for deployment
+2.mp4
+VIDEOS FOR WEBSITES/
+
+# Build output (Vercel builds from source)
+dist/
+
+# Node modules
+node_modules/
